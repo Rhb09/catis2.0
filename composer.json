@@ -1,0 +1,22 @@
+{
+    "name": "robinsonherrera/catis",
+    "description": "Un proyecto para generar documentos de Word con PHPWord.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Robinsonherrera\\Catis\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Robinson Herrera",
+            "email": "robinson@example.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "phpoffice/phpword": "^1.2",
+        "phpoffice/phpspreadsheet": "1.18"
+    }
+}

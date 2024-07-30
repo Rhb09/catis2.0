@@ -1,0 +1,12 @@
+CREATE TABLE datos_paciente (
+    document_number VARCHAR(50) PRIMARY KEY,
+    patient_name VARCHAR(100) NOT NULL,
+    consultation_date DATE NOT NULL,
+    accompanying_person VARCHAR(100),
+    relationship VARCHAR(50),
+    document_type ENUM('cedula', 'tarjeta_identidad', 'pasaporte') NOT NULL,
+    perinatal_antecedents ENUM('vaginal_community', 'vaginal_hospital', 'cesarean') NOT NULL,
+    general_aspect ENUM('good_aspect', 'bad_aspect', 'dirty') NOT NULL,
+    reactivity ENUM('relates_well', 'does_not_relate') NOT NULL,
+    entry_method ENUM('walking_alone', 'walking_with_support', 'carried_by_accompanying', 'baby-car') NOT NULL
+);

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control por Voz con Seuz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        input, select {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield; /* Oculta el spinner en navegadores Firefox */
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none; /* Oculta el spinner en navegadores WebKit */
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Control por Voz con Seuz</h1>
+    <button id="start">Iniciar Reconocimiento</button>
+    <button id="stop">Detener Reconocimiento</button>
+    <!-- <p id="output"></p> Eliminar esta línea para no mostrar mensajes -->
+    <input type="text" id="nombrePaciente" placeholder="Nombre del Paciente">
+    <input type="text" id="numeroDocumento" placeholder="Número de Documento">
+    <select id="fieldSelect">
+        <option value="opcion1">Opción 1</option>
+        <option value="opcion2">Opción 2</option>
+        <option value="cedula">Cédula de Ciudadanía</option>
+        <!-- Agrega más opciones si es necesario -->
+    </select>
+    <label for="accompanying_person">Acompañante:</label>
+    <input type="text" id="accompanying_person" name="accompanying_person"><br><br>
+    <label for="edad">Edad:</label>
+    <input type="text" id="edad" name="edad"><br><br>
+
+    <script>
+        let recognition;
+        let isActive = false;
+
+        if (!('webkitSpeechRecognition' in window)) {
+            alert('Tu navegador no soporta Reconocimiento de Voz. Por favor usa Google Chrome.');
+        } else {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = false;
+            recognition.lang = 'es-ES'; // Ajusta al idioma adecuado
+            recognition.maxAlternatives = 1;
+
+            const maxDigits = 15; // Número máximo de dígitos permitidos
+
+            const commands = {
+                "nombre del paciente es": (value) => {
+                    document.getElementById('nombrePaciente').value = value;
+                },
+                "número de documento es": (value) => {
+                    const input = document.getElementById('numeroDocumento');
+                    value = value.replace(/\s+/g, ''); // Elimina los espacios
+                    if (/^\d+$/.test(value)) { // Verifica que el valor solo contenga dígitos
+                        let currentValue = input.value.replace(/\D/g, ''); // Elimina caracteres no numéricos
+                        let newValue = currentValue + value;
+                        if (newValue.length <= maxDigits) {
+                            input.value = newValue;
+                        } else {
+                            speak('Número de documento excede el límite de 15 dígitos.');
+                        }
+                    } else {
+                        speak('Tipo de dato no permitido para número de documento. Por favor ingresa solo números.');
+                    }
+                },
+                "tipo de documento es": (value) => {
+                    const select = document.getElementById('fieldSelect');
+                    const option = Array.from(select.options).find(opt => opt.text.toLowerCase() === value.toLowerCase());
+                    if (option) {
+                        select.value = option.value;
+                    } else {
+                        speak('Opción no encontrada: ' + value);
+                    }
+                },
+                "acompañante es": (value) => {
+                    document.getElementById('accompanying_person').value = value;
+                },
+                "edad es": (value) => {
+                    value = value.replace(/\s+/g, ''); // Elimina los espacios
+                    if (/^\d+$/.test(value)) { // Verifica que el valor solo contenga dígitos para edad
+                        let input = document.getElementById('edad');
+                        let currentValue = input.value.replace(/\D/g, ''); // Elimina caracteres no numéricos
+                        let newValue = currentValue + value;
+                        if (newValue.length <= maxDigits) {
+                            input.value = newValue;
+                        } else {
+                            speak('Edad excede el límite de 15 dígitos.');
+                        }
+                    } else {
+                        speak('Tipo de dato no permitido para edad. Por favor ingresa solo números.');
+                    }
+                },
+                "saludar": () => {
+                    speak('¡Hola! ¿En qué puedo ayudarte hoy?');
+                },
+                "activar": () => {
+                    if (!isActive) {
+                        isActive = true;
+                        recognition.start();
+                        speak('Hola soy Seuz, tu asistente. ¿En qué puedo ayudarte?');
+                    }
+                },
+                "hasta luego": () => {
+                    if (isActive) {
+                        isActive = false;
+                        recognition.stop();
+                        speak('Fue un placer ayudarte. Hasta luego.');
+                    }
+                },
+                // Agrega más comandos según sea necesario
+            };
+
+            recognition.onresult = function(event) {
+                const result = event.results[event.resultIndex];
+                if (result.isFinal) {
+                    const command = result[0].transcript.trim().toLowerCase();
+                    console.log('Comando recibido:', command);
+                    handleCommand(command);
+                }
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Error en el reconocimiento de voz:', event.error);
+            };
+
+            function startRecognition() {
+                if (!isActive) {
+                    isActive = true;
+                    recognition.start();
+                    speak('Hola soy Seuz, tu asistente. ¿En qué puedo ayudarte?');
+                }
+            }
+
+            function stopRecognition() {
+                if (isActive) {
+                    isActive = false;
+                    recognition.stop();
+                    speak('Fue un placer ayudarte. Hasta luego.');
+                }
+            }
+
+            document.getElementById('start').addEventListener('click', startRecognition);
+            document.getElementById('stop').addEventListener('click', stopRecognition);
+
+            function handleCommand(command) {
+                let recognized = false;
+                for (const [key, action] of Object.entries(commands)) {
+                    if (command.includes(key)) {
+                        const value = command.replace(key, '').trim();
+                        action(value);
+                        recognized = true;
+                        break;
+                    }
+                }
+
+                if (!recognized) {
+                    speak('Comando no reconocido: ' + command);
+                }
+            }
+
+            function speak(text) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'es-ES'; // Ajusta al idioma adecuado
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 's') {
+                startRecognition();
+            } else if (event.key === 'a') {
+                stopRecognition();
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

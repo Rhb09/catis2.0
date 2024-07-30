@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconocimiento de Voz</title>
+    <style>
+        .voice-button {
+            background-color: blue; /* Verde suave */
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        
+        .voice-button:hover {
+            background-color: blue;
+            transform: scale(1.05);
+        }
+        
+        .voice-button:active {
+            background-color: #388e3c;
+            transform: scale(0.95);
+        }
+        
+        .voice-button span {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <button id="toggle" class="voice-button" title="Iniciar reconocimiento de voz">
+        <span>Hablar</span>
+    </button>
+
+    <script>
+        const toggleButton = document.getElementById('toggle');
+        let isRecognizing = false;
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+        recognition.onstart = () => {
+            isRecognizing = true;
+            toggleButton.textContent = 'Detener';
+            toggleButton.title = 'Detener reconocimiento de voz';
+        };
+
+        recognition.onend = () => {
+            isRecognizing = false;
+            toggleButton.textContent = 'Hablar';
+            toggleButton.title = 'Iniciar reconocimiento de voz';
+        };
+
+        toggleButton.addEventListener('click', () => {
+            if (isRecognizing) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        });
+    </script>
+</body>
+</html>

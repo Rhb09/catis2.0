@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos de Excel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #search-container {
+            margin-bottom: 20px;
+        }
+        #search-input {
+            padding: 8px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <h1>Datos de Excel</h1>
+    <div id="search-container">
+        <input type="text" id="search-input" placeholder="Buscar por nombre...">
+    </div>
+    <table id="data-table">
+        <!-- Aquí se insertarán los datos de Excel -->
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('basededatos.php') // Reemplaza con la ruta a tu archivo PHP
+                .then(response => response.json())
+                .then(data => {
+                    const table = document.getElementById('data-table');
+
+                    if (data.length > 0) {
+                        const thead = document.createElement('thead');
+                        const trHead = document.createElement('tr');
+                        data[0].forEach((cell, index) => {
+                            const th = document.createElement('th');
+                            th.textContent = `Columna ${index + 1}`; // Personaliza el encabezado aquí
+                            trHead.appendChild(th);
+                        });
+                        thead.appendChild(trHead);
+                        table.appendChild(thead);
+                        
+                        const tbody = document.createElement('tbody');
+                        data.forEach((row) => {
+                            const tr = document.createElement('tr');
+                            row.forEach(cell => {
+                                const td = document.createElement('td');
+                                td.textContent = cell;
+                                tr.appendChild(td);
+                            });
+                            tbody.appendChild(tr);
+                        });
+                        table.appendChild(tbody);
+                    } else {
+                        const tr = document.createElement('tr');
+                        const td = document.createElement('td');
+                        td.colSpan = 3; // Ajusta el colspan según la cantidad de columnas
+                        td.textContent = 'No hay datos disponibles.';
+                        tr.appendChild(td);
+                        table.appendChild(tr);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            
+            // Filtro de búsqueda
+            document.getElementById('search-input').addEventListener('input', function() {
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#data-table tbody tr');
+                
+                rows.forEach(row => {
+                    const cells = row.getElementsByTagName('td');
+                    let match = false;
+                    
+                    for (let i = 0; i < cells.length; i++) {
+                        const cellText = cells[i].textContent.toLowerCase();
+                        if (cellText.includes(filter)) {
+                            match = true;
+                            break;
+                        }
+                    }
+                    
+                    row.style.display = match ? '' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,70 @@
+
+        
+                .container {
+                    display: flex;
+                    justify-content: space-between;
+                }
+        
+                .left-column, .right-column {
+                    width: 48%;
+                }
+        
+                label {
+                    display: block;
+                    margin-bottom: 5px;
+                }
+        
+                input, select {
+                    width: 100%;
+                    padding: 8px;
+                    margin-bottom: 20px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                }
+        
+                button {
+                    margin-top: 20px;
+                }
+
+        .left-column input[type="text"], 
+        .left-column input[type="date"], 
+        .left-column input[type="tel"], 
+        .right-column select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            font-size: 31px;
+            margin-top: 30px;
+            font-weight: bold;
+            text-align: center;
+            color: #1300c0;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+        }
+        
