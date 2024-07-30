@@ -17,25 +17,25 @@ function renderFolderContent($baseDirectory, $currentDir) {
 
     // Listar carpetas
     $folders = glob($currentDirPath . '/*', GLOB_ONLYDIR);
+
     // Listar archivos .docx
     $files = glob($currentDirPath . '/*.docx');
 
     // Mostrar la ruta actual
     $pathParts = explode('/', trim($currentDir, '/'));
-    $pathDisplay = '<span class="breadcrumb"><a href="#">Inicio</a>';
+    $pathDisplay = 'Inicio';
     $currentPath = '';
     foreach ($pathParts as $part) {
         $currentPath .= '/' . $part;
-        $pathDisplay .= ' > <a href="#' . urlencode($currentPath) . '">' . htmlspecialchars($part) . '</a>';
+        $pathDisplay .= ' > ' . htmlspecialchars($part);
     }
-    $pathDisplay .= '</span>';
-    echo $pathDisplay;
+    echo '<p>' . $pathDisplay . '</p>';
 
     // Mostrar carpetas
     if (count($folders) > 0) {
         foreach ($folders as $folder) {
             $folderName = basename($folder);
-            echo '<div class="folder" onclick="updateFolderDisplay(\'' . htmlspecialchars($currentDir . '/' . $folderName) . '\')">';
+            echo '<div class="folder" data-folder="' . htmlspecialchars($currentDir . '/' . $folderName) . '">';
             echo '<span>📁 ' . htmlspecialchars($folderName) . '</span>';
             echo '</div>';
         }
@@ -55,7 +55,3 @@ function renderFolderContent($baseDirectory, $currentDir) {
 // Llamada a la función para renderizar el contenido
 renderFolderContent($baseDirectory, $path);
 ?>
-
-
-
-
